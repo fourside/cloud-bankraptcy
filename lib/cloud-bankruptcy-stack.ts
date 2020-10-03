@@ -15,6 +15,12 @@ export class CloudBankruptcyStack extends Stack {
           expiration: Duration.days(180),
         },
       ],
+      blockPublicAccess: {
+        blockPublicAcls: true,
+        ignorePublicAcls: true,
+        blockPublicPolicy: true,
+        restrictPublicBuckets: true,
+      },
     });
   }
 }
