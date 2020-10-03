@@ -1,9 +1,20 @@
-import * as cdk from "@aws-cdk/core";
+import { Stack, Construct, StackProps, Duration } from "@aws-cdk/core";
+import { Bucket, BucketEncryption } from "@aws-cdk/aws-s3";
 
-export class CloudBankruptcyStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export class CloudBankruptcyStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    new Bucket(this, "foursideCloudBankruptcy", {
+      bucketName: "fourside-cloud-bankruptcy",
+      versioned: true,
+      encryption: BucketEncryption.KMS_MANAGED,
+      lifecycleRules: [
+        {
+          enabled: true,
+          expiration: Duration.days(180),
+        },
+      ],
+    });
   }
 }
