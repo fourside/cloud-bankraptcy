@@ -2,6 +2,7 @@ import { Stack, Construct, StackProps } from "@aws-cdk/core";
 import { createS3Bucket } from "./s3";
 import { createCloudTrail } from "./cloudtrail";
 import { createConfig } from "./config";
+import { createSnsTopic, createSubscription } from "./sns";
 
 export class CloudBankruptcyStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -17,5 +18,8 @@ export class CloudBankruptcyStack extends Stack {
 
     const awsConfigBucket = createS3Bucket(this, "fourside-config-log");
     createConfig(this, "cloud-bankruptcy", awsConfigBucket);
+
+    const snsTopic = createSnsTopic(this, "cloud-bankruptcy-topic");
+    createSubscription(this, "cloud-bankruptcy-subscription", snsTopic, "fourside@gmail.com");
   }
 }
