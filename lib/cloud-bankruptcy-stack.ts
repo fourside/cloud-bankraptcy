@@ -1,6 +1,7 @@
 import { Stack, Construct, StackProps } from "@aws-cdk/core";
 import { createS3Bucket } from "./s3";
 import { createCloudTrail } from "./cloudtrail";
+import { createConfig } from "./config";
 
 export class CloudBankruptcyStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -13,5 +14,8 @@ export class CloudBankruptcyStack extends Stack {
 
     const cloudtrailLogBucket = createS3Bucket(this, "fourside-cloudtrail-log");
     createCloudTrail(this, "cloud-bankruptcy", cloudtrailLogBucket);
+
+    const awsConfigBucket = createS3Bucket(this, "fourside-config-log");
+    createConfig(this, "cloud-bankruptcy", awsConfigBucket);
   }
 }
