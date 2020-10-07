@@ -4,6 +4,7 @@ import { createCloudTrail } from "./cloudtrail";
 import { createConfig } from "./config";
 import { createSnsTopic, createSubscription } from "./sns";
 import { createGuardDuty } from "./guardduty";
+import { createAccessAnalyzer } from "./access-analyzer";
 
 export class CloudBankruptcyStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -24,5 +25,6 @@ export class CloudBankruptcyStack extends Stack {
     createSubscription(this, "cloud-bankruptcy-subscription", snsTopic, "fourside@gmail.com");
 
     createGuardDuty(this, "cloud-bankruptcy-guardduty", snsTopic);
+    createAccessAnalyzer(this, "cloud-bankruptcy", snsTopic);
   }
 }
