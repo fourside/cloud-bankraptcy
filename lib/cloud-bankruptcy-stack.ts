@@ -3,6 +3,7 @@ import { createS3Bucket } from "./s3";
 import { createCloudTrail } from "./cloudtrail";
 import { createConfig } from "./config";
 import { createSnsTopic, createSubscription } from "./sns";
+import { createGuardDuty } from "./guardduty";
 
 export class CloudBankruptcyStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -21,5 +22,7 @@ export class CloudBankruptcyStack extends Stack {
 
     const snsTopic = createSnsTopic(this, "cloud-bankruptcy-topic");
     createSubscription(this, "cloud-bankruptcy-subscription", snsTopic, "fourside@gmail.com");
+
+    createGuardDuty(this, "cloud-bankruptcy-guardduty", snsTopic);
   }
 }

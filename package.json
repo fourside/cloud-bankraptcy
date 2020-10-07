@@ -33,6 +33,9 @@
   "dependencies": {
     "@aws-cdk/aws-cloudtrail": "^1.66.0",
     "@aws-cdk/aws-config": "^1.66.0",
+    "@aws-cdk/aws-events": "^1.66.0",
+    "@aws-cdk/aws-events-targets": "^1.66.0",
+    "@aws-cdk/aws-guardduty": "^1.66.0",
     "@aws-cdk/aws-iam": "^1.66.0",
     "@aws-cdk/aws-logs": "^1.66.0",
     "@aws-cdk/aws-s3": "1.66.0",
