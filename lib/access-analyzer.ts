@@ -1,7 +1,7 @@
 import { Construct } from "@aws-cdk/core";
 import { CfnAnalyzer } from "@aws-cdk/aws-accessanalyzer";
 import { Topic } from "@aws-cdk/aws-sns";
-import { Rule } from "@aws-cdk/aws-events";
+import { Rule, RuleTargetInput, EventField } from "@aws-cdk/aws-events";
 import { SnsTopic } from "@aws-cdk/aws-events-targets";
 
 export function createAccessAnalyzer(scope: Construct, name: string, topic: Topic): void {
@@ -19,6 +19,12 @@ export function createAccessAnalyzer(scope: Construct, name: string, topic: Topi
     },
   });
 
-  const snsTopicTarget = new SnsTopic(topic);
+  const snsTopicTarget = new SnsTopic(topic, {
+    message: RuleTargetInput.fromObject({
+      type: EventField.fromPath("$.detail.resourceType"),
+      resource: EventField.fromPath("$.detail.resource"),
+      action: EventField.fromPath("$.detail.action"),
+    }),
+  });
   rule.addTarget(snsTopicTarget);
 }
