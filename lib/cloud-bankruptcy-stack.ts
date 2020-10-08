@@ -5,6 +5,7 @@ import { createConfig } from "./config";
 import { createSnsTopic, createSubscription } from "./sns";
 import { createGuardDuty } from "./guardduty";
 import { createAccessAnalyzer } from "./access-analyzer";
+import { createSecurityHub } from "./security-hub";
 
 export class CloudBankruptcyStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -26,5 +27,6 @@ export class CloudBankruptcyStack extends Stack {
 
     createGuardDuty(this, "cloud-bankruptcy-guardduty", snsTopic);
     createAccessAnalyzer(this, "cloud-bankruptcy", snsTopic);
+    createSecurityHub(this, "cloud-bankruptcy");
   }
 }
