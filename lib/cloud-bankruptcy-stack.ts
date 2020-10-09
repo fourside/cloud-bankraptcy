@@ -6,6 +6,7 @@ import { createSnsTopic, createSubscription } from "./sns";
 import { createGuardDuty } from "./guardduty";
 import { createAccessAnalyzer } from "./access-analyzer";
 import { createSecurityHub } from "./security-hub";
+import { createChatbot } from "./chatbot";
 
 export class CloudBankruptcyStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -14,6 +15,14 @@ export class CloudBankruptcyStack extends Stack {
     const myIpAddress = process.env.MY_IP;
     if (!myIpAddress) {
       throw new Error("set your ip address to env `MY_IP`");
+    }
+    const slackWorkspaceId = process.env.SLACK_WORKSPACE_ID;
+    if (!slackWorkspaceId) {
+      throw new Error("set slack workspace id to env `SLACK_WORKSPACE_ID`");
+    }
+    const slackChannelId = process.env.SLACK_CHANNEL_ID;
+    if (!slackChannelId) {
+      throw new Error("set slack channel id to env `SLACK_CHANNEL_ID`");
     }
 
     const cloudtrailLogBucket = createS3Bucket(this, "fourside-cloudtrail-log");
@@ -28,5 +37,6 @@ export class CloudBankruptcyStack extends Stack {
     createGuardDuty(this, "cloud-bankruptcy-guardduty", snsTopic);
     createAccessAnalyzer(this, "cloud-bankruptcy", snsTopic);
     createSecurityHub(this, "cloud-bankruptcy");
+    createChatbot(this, "cloud-bankruptcy", slackWorkspaceId, slackChannelId, snsTopic);
   }
 }
