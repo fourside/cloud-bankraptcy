@@ -4,7 +4,7 @@ import { Topic } from "@aws-cdk/aws-sns";
 import { Rule, RuleTargetInput, EventField } from "@aws-cdk/aws-events";
 import { SnsTopic } from "@aws-cdk/aws-events-targets";
 
-export function createGuardDuty(scope: Construct, name: string, topic: Topic): void {
+export function createGuardDuty(scope: Construct, name: string, topic: Topic, chatTopic: Topic): void {
   new CfnDetector(scope, `${name}-guardduty-detector`, {
     enable: true,
     findingPublishingFrequency: "SIX_HOURS",
@@ -25,4 +25,7 @@ export function createGuardDuty(scope: Construct, name: string, topic: Topic): v
     }),
   });
   guardDutyRule.addTarget(snsTopicTarget);
+
+  const chatTopicTarget = new SnsTopic(chatTopic);
+  guardDutyRule.addTarget(chatTopicTarget);
 }

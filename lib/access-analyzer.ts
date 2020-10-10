@@ -4,7 +4,7 @@ import { Topic } from "@aws-cdk/aws-sns";
 import { Rule, RuleTargetInput, EventField } from "@aws-cdk/aws-events";
 import { SnsTopic } from "@aws-cdk/aws-events-targets";
 
-export function createAccessAnalyzer(scope: Construct, name: string, topic: Topic): void {
+export function createAccessAnalyzer(scope: Construct, name: string, topic: Topic, chatTopic: Topic): void {
   new CfnAnalyzer(scope, `${name}-access-analyzer`, {
     type: "ACCOUNT",
   });
@@ -27,4 +27,7 @@ export function createAccessAnalyzer(scope: Construct, name: string, topic: Topi
     }),
   });
   rule.addTarget(snsTopicTarget);
+
+  const chatTopicTarget = new SnsTopic(chatTopic);
+  rule.addTarget(chatTopicTarget);
 }

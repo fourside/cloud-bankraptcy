@@ -34,9 +34,10 @@ export class CloudBankruptcyStack extends Stack {
     const snsTopic = createSnsTopic(this, "cloud-bankruptcy-topic");
     createSubscription(this, "cloud-bankruptcy-subscription", snsTopic, "fourside@gmail.com");
 
-    createGuardDuty(this, "cloud-bankruptcy-guardduty", snsTopic);
-    createAccessAnalyzer(this, "cloud-bankruptcy", snsTopic);
+    const snsTopicForChatbot = createSnsTopic(this, "cloud-bankruptcy-topic-chatbot");
+    createGuardDuty(this, "cloud-bankruptcy-guardduty", snsTopic, snsTopicForChatbot);
+    createAccessAnalyzer(this, "cloud-bankruptcy", snsTopic, snsTopicForChatbot);
     createSecurityHub(this, "cloud-bankruptcy");
-    createChatbot(this, "cloud-bankruptcy", slackWorkspaceId, slackChannelId, snsTopic);
+    createChatbot(this, "cloud-bankruptcy", slackWorkspaceId, slackChannelId, snsTopicForChatbot);
   }
 }
