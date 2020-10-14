@@ -1,4 +1,5 @@
 import { Stack, Construct, StackProps } from "@aws-cdk/core";
+import { PolicyStatement, Effect } from "@aws-cdk/aws-iam";
 import { createS3Bucket } from "./s3";
 import { createCloudTrail } from "./cloudtrail";
 import { createConfig } from "./config";
@@ -7,6 +8,9 @@ import { createGuardDuty } from "./guardduty";
 import { createAccessAnalyzer } from "./access-analyzer";
 import { createSecurityHub } from "./security-hub";
 import { createChatbot } from "./chatbot";
+import { createLambda } from "./lambda";
+import { setLambdaRule } from "./setLambdaRule";
+import * as path from "path";
 
 export class CloudBankruptcyStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -25,6 +29,11 @@ export class CloudBankruptcyStack extends Stack {
       throw new Error("set slack channel id to env `SLACK_CHANNEL_ID`");
     }
 
+    const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL;
+    if (!slackWebhookUrl) {
+      throw new Error("set slack webhook url to env `SLACK_WEBHOOK_URL`");
+    }
+
     const cloudtrailLogBucket = createS3Bucket(this, "fourside-cloudtrail-log");
     createCloudTrail(this, "cloud-bankruptcy", cloudtrailLogBucket);
 
@@ -39,5 +48,28 @@ export class CloudBankruptcyStack extends Stack {
     createAccessAnalyzer(this, "cloud-bankruptcy", snsTopic, snsTopicForChatbot);
     createSecurityHub(this, "cloud-bankruptcy");
     createChatbot(this, "cloud-bankruptcy", slackWorkspaceId, slackChannelId, snsTopicForChatbot);
+
+    createBudgetNotificationLambda(this, slackWebhookUrl);
   }
+}
+
+function createBudgetNotificationLambda(scope: Construct, slackWebhookUrl: string) {
+  const lambdaCodePath = path.join(__dirname, "../lambda/budget/handler.ts");
+  const lambdaEnv = {
+    SLACK_WEBHOOK_URL: slackWebhookUrl,
+  };
+  const budgetNotificationLambda = createLambda(scope, "cloud-bankruptcy", lambdaCodePath, lambdaEnv);
+
+  const viewBudgetsPolicy = new PolicyStatement({
+    effect: Effect.ALLOW,
+    actions: ["budgets:ViewBudget"],
+    resources: ["*"],
+  });
+  budgetNotificationLambda.addToRolePolicy(viewBudgetsPolicy);
+
+  const cronOptions = {
+    minute: "0",
+    hour: "22",
+  };
+  setLambdaRule(scope, "cloud-bankruptcy", budgetNotificationLambda, cronOptions);
 }
